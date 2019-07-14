@@ -103,7 +103,7 @@ def plotResiduals(dataFrame,datasetDescription):
     axs[1].set_xlabel('SV elevation (deg)')
 
     plt.savefig("{}.png".format(datasetDescription), bbox_inches="tight", dpi=200);
-
+    plt.close()
 
 # class GPSDate(dt.date):
 #     """
@@ -131,7 +131,7 @@ if __name__ == "__main__":
 
         parseRTKLibStatus(ReadRTKLibStatusFile,"out.out")
         GPS=ReadRTKLibStatus("out.out")
-        plotResiduals(GPS,ReadRTKLibStatusFile[:-4])
+        plotResiduals(GPS,ReadRTKLibStatusFile[:-9])
         print ("            ... plot completed")
 
 
