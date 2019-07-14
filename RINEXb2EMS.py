@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module to convert RINEXB to EMS format
+Module to convert RTKLib to EMS format
 LKB(c) 2019
 """
 import sys

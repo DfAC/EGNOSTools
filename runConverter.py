@@ -9,7 +9,6 @@ import sys
 
 from RINEXb2EMS import convertRINEXB2EMS
 
-
 if __name__ == "__main__":
 
 
