@@ -97,10 +97,12 @@ def plotResiduals(dataFrame,datasetDescription):
     axs[0].set_xlabel('SV')
     axs[0].set_title('PR residuals for {}'.format(datasetDescription))
     axs[0].set_xticklabels(axs[0].get_xticklabels(),rotation=45)
+    axs[0].set_ylim([-1,1])
 
     axs[1].scatter(SV_el,res_PR,alpha=0.1)
     axs[1].set_ylabel("PR residuals[m]")
     axs[1].set_xlabel('SV elevation (deg)')
+    axs[1].set_ylim([-2,2])
 
     plt.savefig("{}.png".format(datasetDescription), bbox_inches="tight", dpi=200);
     plt.close()
