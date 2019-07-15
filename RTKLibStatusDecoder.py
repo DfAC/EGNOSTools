@@ -6,8 +6,9 @@ LKB(c) 2019
 # import argparse
 import sys
 import glob
-
+import numpy as np
 import pandas as pd
+
 import matplotlib.pyplot as plt
 import matplotlib #so I can call next line
 matplotlib.style.use('ggplot')
@@ -91,7 +92,6 @@ def plotResiduals(dataFrame,datasetDescription):
     plt_fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]},
                     figsize=(9, 9))
 
-
     res_PR.plot(kind='box',ax=axs[0])
     axs[0].set_ylabel('Residuals [m]')
     axs[0].set_xlabel('SV')
@@ -99,11 +99,36 @@ def plotResiduals(dataFrame,datasetDescription):
     axs[0].set_xticklabels(axs[0].get_xticklabels(),rotation=45)
     axs[0].set_ylim([-1,1])
 
+    #TODO there is bug in py3.4 , use py3.6 instead
     axs[1].scatter(SV_el,res_PR,alpha=0.1)
     axs[1].set_ylabel("PR residuals[m]")
     axs[1].set_xlabel('SV elevation (deg)')
     axs[1].set_ylim([-2,2])
 
+
+
+    #create stats per SV
+    cols = res_PR.columns
+    std = res_PR[cols].apply(lambda x: np.nanstd(x), axis=0)
+    std = np.insert(std.values,0,std.values[0]) #missing one value, HACK
+    mean = res_PR[cols].apply(lambda x: np.nanmean(x), axis=0)
+    mean = np.insert(mean.values,0,mean.values[0])
+
+    axs[0].plot(mean+std,'b',alpha=0.5) 
+    axs[0].plot(mean-std,'b',alpha=0.5)
+
+    #create overall stats for residuals
+    allSV_stats = [dataFrame.resp.mean(),dataFrame.resp.std()]
+
+    axs[0].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
+    axs[0].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
+
+    axs[1].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
+    axs[1].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
+
+
+    # axs[1].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
+    # axs[1].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
     plt.savefig("{}.png".format(datasetDescription), bbox_inches="tight", dpi=200);
     plt.close()
 
