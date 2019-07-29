@@ -89,8 +89,11 @@ def plotResiduals(dataFrame,datasetDescription):
     res_PR = dataFrame.pivot_table(columns='SV',values='resp',index='time')
     res_PR =  res_PR.dropna(axis=1, how='all')
 
-    plt_fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]},
+    # plt_fig, axs = plt.subplots(3, 1, gridspec_kw={'height_ratios': [1,1, 1]},
+    #                 figsize=(9, 9))
+    plt_fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2,1]},
                     figsize=(9, 9))
+
 
     res_PR.plot(kind='box',ax=axs[0])
     axs[0].set_ylabel('Residuals [m]')
@@ -99,18 +102,17 @@ def plotResiduals(dataFrame,datasetDescription):
     axs[0].set_xticklabels(axs[0].get_xticklabels(),rotation=45)
     axs[0].set_ylim([-1,1])
 
-    #TODO there is bug in py3.4 , use py3.6 instead
+    #NOTE there is bug in py3.4, use py3.6 instead
     axs[1].scatter(SV_el,res_PR,alpha=0.1)
     axs[1].set_ylabel("PR residuals[m]")
     axs[1].set_xlabel('SV elevation (deg)')
     axs[1].set_ylim([-2,2])
-
-
+    axs[1].set_xlim([0,90]) #el angle
 
     #create stats per SV
     cols = res_PR.columns
     std = res_PR[cols].apply(lambda x: np.nanstd(x), axis=0)
-    std = np.insert(std.values,0,std.values[0]) #missing one value, HACK
+    std = np.insert(std.values,0,std.values[0]) #repeating first value twice, HACK
     mean = res_PR[cols].apply(lambda x: np.nanmean(x), axis=0)
     mean = np.insert(mean.values,0,mean.values[0])
 
@@ -123,12 +125,31 @@ def plotResiduals(dataFrame,datasetDescription):
     axs[0].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
     axs[0].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
 
+
+
     axs[1].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
     axs[1].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
+    #describe RMS for all SV on top of magenta line
+    text="STDE: {:.2f} m".format(allSV_stats[1])
+    axs[1].annotate(text,(0,allSV_stats[0]+allSV_stats[1]),
+        xycoords = 'data',fontweight='bold')
+
+    # TODO: add option to plot ICP residuals
+    # res_c = dataFrame.pivot_table(columns='SV',values='resc',index='time')
+    # res_c =  res_c.dropna(axis=1, how='all')
+
+    # res_c.plot(kind='box',ax=axs[2])
+    # axs[2].set_ylabel('Residuals [m]')
+    # axs[2].set_xlabel('SV')
+    # axs[2].set_title('ICP residuals for {}'.format(datasetDescription))
+    # axs[2].set_xticklabels(axs[0].get_xticklabels(),rotation=45)
+    # axs[2].set_ylim([-0.02,0.02])
+
+    # allSV_stats = [dataFrame.resc.mean(),dataFrame.resc.std()]
+    # axs[2].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
+    # axs[2].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
 
 
-    # axs[1].axhline(allSV_stats[0]+allSV_stats[1],color='m',alpha=0.5)
-    # axs[1].axhline(allSV_stats[0]-allSV_stats[1],color='m',alpha=0.5)
     plt.savefig("{}.png".format(datasetDescription), bbox_inches="tight", dpi=200);
     plt.close()
 
