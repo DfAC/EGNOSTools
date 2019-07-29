@@ -112,12 +112,23 @@ def plotResiduals(dataFrame,datasetDescription):
     #create stats per SV
     cols = res_PR.columns
     std = res_PR[cols].apply(lambda x: np.nanstd(x), axis=0)
-    std = np.insert(std.values,0,std.values[0]) #repeating first value twice, HACK
     mean = res_PR[cols].apply(lambda x: np.nanmean(x), axis=0)
-    mean = np.insert(mean.values,0,mean.values[0])
+    #add text descr for each SV
+    text = ["{:.2f}m".format(STD) for STD in mean+std]
+    idx=0
+    yloc=axs[0].get_ylim()[0]
+    for descr in text:
+        idx +=1
+        # axs[0].annotate(descr,(idx,yloc),
+        axs[0].annotate(descr,(idx,yloc+.2),fontsize=9,
+            rotation=90,xycoords = 'data')
 
-    axs[0].plot(mean+std,'b',alpha=0.5) 
-    axs[0].plot(mean-std,'b',alpha=0.5)
+    #as x axis starts from 1 we need to place values starting from 1 not 0
+    x_range = np.array(list(range(len(cols))))+1
+
+    axs[0].plot(x_range,mean+std,'b',alpha=0.5) 
+    axs[0].plot(x_range,mean-std,'b',alpha=0.5)
+
 
     #create overall stats for residuals
     allSV_stats = [dataFrame.resp.mean(),dataFrame.resp.std()]
