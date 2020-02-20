@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module to extract data from RTKLib status files
+Module to visualise residuals data from RTKLib status files
 LKB(c) 2019
 """
 # import argparse
@@ -12,8 +12,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib #so I can call next line
 matplotlib.style.use('ggplot')
-
-# TODO estimate residuals stats (RMS, STD per SV)
 
 def parseRTKLibStatus(status_file,output_file="tmp.tmp"):
     '''
